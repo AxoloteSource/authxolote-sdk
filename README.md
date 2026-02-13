@@ -159,7 +159,7 @@ To use this middleware, your User model (or the object returned by the guard) mu
 
 ## Credits
 
-- [Luis Ozuna](https://github.com/luisozuna)
+- [Luis Ozuna](https://github.com/LuisOzParr)
 
 ## License
 
