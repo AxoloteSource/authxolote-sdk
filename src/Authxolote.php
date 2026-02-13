@@ -6,7 +6,7 @@ use Authxolote\Sdk\Clases\AttachRolesAction;
 use Authxolote\Sdk\Clases\CheckPermission;
 use Authxolote\Sdk\Clases\Me;
 use Authxolote\Sdk\Clases\Register;
-use Authxolote\Sdk\DTO\AuthUser;
+use Authxolote\Sdk\DTO\UserDto;
 use Authxolote\Sdk\DTO\ExternalUser;
 use Authxolote\Sdk\Enums\RoleEnum;
 
@@ -60,9 +60,9 @@ class Authxolote
     }
 
     /**
-     * Registra un usuario con los detalles proporcionados y devuelve una instancia de AuthUser.
+     * Registra un usuario con los detalles proporcionados y devuelve una instancia de UserDto.
      */
-    public static function register(string $email, string $name, string $password, string $roleKey): ?AuthUser
+    public static function register(string $email, string $name, string $password, string $roleKey): ?UserDto
     {
         return (new Register)->register($email, $name, $password, $roleKey);
     }
@@ -77,6 +77,7 @@ class Authxolote
 
     public static function attachRolesAction(array $roles): bool
     {
-        return new AttachRolesAction($roles)->run();
+        $action = new AttachRolesAction($roles);
+        return $action->run();
     }
 }

@@ -111,6 +111,10 @@ class AuthxoloteGuard implements Guard
      */
     protected function getUserData(string $token): ?array
     {
+        if (Authxolote::isFake()) {
+             return Authxolote::me()->setAuthUserToken($token)->run();
+        }
+
         $cacheKey = 'authxolote'.$token;
 
         $ttl = now()->addMinutes(10);

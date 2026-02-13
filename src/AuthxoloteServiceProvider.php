@@ -18,6 +18,8 @@ class AuthxoloteServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->app['router']->aliasMiddleware('isAllow', \Authxolote\Sdk\Middleware\IsAllow::class);
+
         if ($this->app->runningInConsole()) {
             if (file_exists(__DIR__.'/../config/authxolote.php')) {
                 $this->publishes([

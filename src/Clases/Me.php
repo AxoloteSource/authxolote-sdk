@@ -2,6 +2,7 @@
 
 namespace Authxolote\Sdk\Clases;
 
+use Authxolote\Sdk\Authxolote;
 use App\Models\User;
 
 class Me extends AuthxoloteBase
@@ -15,6 +16,10 @@ class Me extends AuthxoloteBase
 
     public function run(): ?array
     {
+        if (Authxolote::isFake()) {
+            return $this->fakeResponse();
+        }
+
         $response = $this->post();
 
         if ($response->ok()) {
@@ -28,21 +33,27 @@ class Me extends AuthxoloteBase
         return null;
     }
 
-    public function user(): ?User
+    protected function fakeResponse(): array
     {
-        $userData = $this->run();
+        $faker = \Faker\Factory::create();
 
-        if (! $userData) {
-            return null;
-        }
-
-        $user = User::where('external_user_id', $userData['data']['id'])->first();
-        if (! $user) {
-            logger('AuthToken Valid but external_user_id not found in DB');
-
-            return null;
-        }
-
-        return $user;
+        return [
+            'status' => 'OK',
+            'message' => null,
+            'data' => [
+                'user' => [
+                    'id' => $faker->uuid(),
+                    'role_id' => $faker->uuid(),
+                    'name' => $faker->name(),
+                    'email' => $faker->safeEmail(),
+                    'email_verified_at' => null,
+                    'password' => bcrypt('password'),
+                    'remember_token' => null,
+                    'deleted_at' => null,
+                    'created_at' => now()->toIso8601String(),
+                    'updated_at' => now()->toIso8601String(),
+                ],
+            ],
+        ];
     }
 }
