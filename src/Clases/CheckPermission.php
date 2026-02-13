@@ -68,7 +68,7 @@ class CheckPermission extends AuthxoloteBase
             $body = $response->json();
 
             if (isset($body['data']) && is_array($body['data'])) {
-                $allAllowed = array_all($this->actions, fn ($action) => ! empty($body['data'][$action]) && $body['data'][$action] === true);
+                $allAllowed = collect($this->actions)->every(fn ($action) => ! empty($body['data'][$action]) && $body['data'][$action] === true);
 
                 $this->loggerSuccess('all', $allAllowed);
 

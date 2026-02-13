@@ -2,6 +2,7 @@
 
 namespace Authxolote\Sdk\Clases;
 
+use Authxolote\Sdk\Authxolote;
 use Authxolote\Sdk\DTO\UserDto;
 use Faker\Factory;
 
@@ -20,6 +21,13 @@ class Register extends AuthxoloteBase
     public function register(string $email, string $name, string $password, string $roleKey): ?UserDto
     {
         try {
+            if (Authxolote::isFake()) {
+                $data = $this->fakeResponse();
+                $data['data']['user']['email'] = $email;
+                $data['data']['user']['name'] = $name;
+                return UserDto::fromArray($data, $data['data']['access_token'] ?? '');
+            }
+
             $response = $this->post([
                 'email' => $email,
                 'name' => $name,
@@ -29,7 +37,8 @@ class Register extends AuthxoloteBase
             ]);
 
             if ($response->successful()) {
-                return AuthUser::fromArray($response->json());
+                $data = $response->json();
+                return UserDto::fromArray($data, $data['data']['access_token'] ?? '');
             }
 
             if ($this->debugMode) {
