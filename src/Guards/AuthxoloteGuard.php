@@ -14,12 +14,22 @@ class AuthxoloteGuard implements Guard
 {
     protected ?Authenticatable $user = null;
 
+    protected $request;
+    protected $authxolote_url;
+    protected $cache;
+    protected $sync_user;
+
     public function __construct(
-        protected Request $request,
-        protected string $authxolote_url,
-        protected bool $cache = true,
-        protected bool $sync_user = true
-    ) {}
+        Request $request,
+        string $authxolote_url,
+        bool $cache = true,
+        bool $sync_user = true
+    ) {
+        $this->request = $request;
+        $this->authxolote_url = $authxolote_url;
+        $this->cache = $cache;
+        $this->sync_user = $sync_user;
+    }
 
     /**
      * Determines if the user is authenticated.
