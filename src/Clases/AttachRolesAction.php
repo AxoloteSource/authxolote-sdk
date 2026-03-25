@@ -4,8 +4,11 @@ namespace Authxolote\Sdk\Clases;
 
 class AttachRolesAction extends AuthxoloteBase
 {
-    public function __construct(protected array $roles)
+    protected array $roles;
+
+    public function __construct(array $roles)
     {
+        $this->roles = $roles;
         parent::__construct('/api/v1/roles/attach/actions');
     }
 

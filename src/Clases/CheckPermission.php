@@ -18,8 +18,11 @@ class CheckPermission extends AuthxoloteBase
 
     protected bool $userAuthUserToken = true;
 
-    public function __construct(protected array $actions)
+    protected array $actions;
+
+    public function __construct(array $actions)
     {
+        $this->actions = $actions;
         parent::__construct('/api/v1/is-allowed');
     }
 
@@ -92,7 +95,10 @@ class CheckPermission extends AuthxoloteBase
         ];
     }
 
-    private function loggerResponse(PromiseInterface|Response $response): void
+    /**
+     * @param PromiseInterface|Response $response
+     */
+    private function loggerResponse($response): void
     {
         if ($this->debugMode) {
             logger()->info('Request sent to permissions API', [
@@ -115,7 +121,10 @@ class CheckPermission extends AuthxoloteBase
         ]);
     }
 
-    private function loggerError(PromiseInterface|Response $response): void
+    /**
+     * @param PromiseInterface|Response $response
+     */
+    private function loggerError($response): void
     {
         if (! $this->debugMode) {
             return;

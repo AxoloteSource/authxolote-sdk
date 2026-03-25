@@ -19,10 +19,13 @@ class AuthxoloteBase
 
     protected array $headers = ['Accept' => 'application/json'];
 
-    private PromiseInterface|Response $response;
+    protected string $uri;
 
-    public function __construct(protected string $uri)
+    private $response;
+
+    public function __construct(string $uri)
     {
+        $this->uri = $uri;
         $this->token = config('authxolote.token');
         $this->url = config('authxolote.url').$this->uri;
         $this->debugMode = config('authxolote.debug');
@@ -31,7 +34,10 @@ class AuthxoloteBase
         }
     }
 
-    protected function post(?array $data = null): PromiseInterface|Response
+    /**
+     * @return PromiseInterface|Response
+     */
+    protected function post(?array $data = null)
     {
         if (Authxolote::isFake()) {
             $this->fake();
