@@ -96,9 +96,21 @@ $user = Authxolote::register(
 );
 ```
 
-### Comandos de Consola
+### Console Commands
 
-Sincroniza los roles y acciones definidos en tu configuración:
+Para sincronizar los roles y acciones, primero debes crear el archivo `config/actions.php` y registrar los roles con sus respectivas acciones:
+
+```php
+return [
+    'roles' => [
+        'admin' => [
+            'app.model.action',
+        ],
+    ],
+];
+```
+
+Luego, sincroniza los roles y acciones definidos en tu configuración ejecutando:
 
 ```bash
 php artisan authxolote:actions

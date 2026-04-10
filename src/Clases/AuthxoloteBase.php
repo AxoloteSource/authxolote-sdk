@@ -27,7 +27,7 @@ class AuthxoloteBase
     {
         $this->uri = $uri;
         $this->token = config('authxolote.token');
-        $this->url = config('authxolote.url').$this->uri;
+        $this->url = rtrim(config('authxolote.url'), '/').$this->uri;
         $this->debugMode = config('authxolote.debug');
         if ($this->userAuthUserToken) {
             $this->setAuthUserToken();
@@ -89,7 +89,7 @@ class AuthxoloteBase
     private function fake(): void
     {
         Http::fake([
-            $this->url = config('authxolote.url').$this->uri => Http::response(
+            $this->url = rtrim(config('authxolote.url'), '/').$this->uri => Http::response(
                 $this->fakeResponse(),
                 200,
                 $this->headers
