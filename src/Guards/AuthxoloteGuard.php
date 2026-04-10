@@ -67,7 +67,7 @@ class AuthxoloteGuard implements Guard
             return $this->user;
         }
 
-        $this->user = User::where('external_user_id', $userData['data']['user']['id'])->first();
+        $this->user = User::where('external_user_id', $userData['data']['id'])->first();
         if (! $this->user) {
             logger('AuthToken Valid but external_user_id not found in DB');
 
