@@ -14,12 +14,12 @@ class IsAllow
         if (! $request->user() || ! method_exists($request->user(), 'belongsToAction') || ! $request->user()->belongsToAction($action)) {
             if ($request->expectsJson()) {
                 return Response::json([
-                    'message' => __('No tienes permiso para acceder a este recurso'),
+                    'message' => __('You do not have permission to access this resource'),
                     'data' => ['action' => $action]
                 ], Http::Forbidden->value);
             }
 
-            abort(Http::Forbidden->value, __('No tienes permiso para acceder a este recurso'));
+            abort(Http::Forbidden->value, __('You do not have permission to access this resource'));
         }
 
         return $next($request);

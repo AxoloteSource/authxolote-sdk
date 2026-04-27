@@ -29,6 +29,16 @@ Esto creará un archivo `config/authxolote.php` donde puedes configurar:
 - `cache`: Habilitar o deshabilitar el almacenamiento en caché de los datos del usuario.
 - `sync_user`: Si se deben buscar los usuarios en tu base de datos local o usar los datos de la API directamente.
 
+### Traducciones
+
+Si deseas personalizar los mensajes del SDK, puedes publicar los archivos de traducción:
+
+```bash
+php artisan vendor:publish --tag="authxolote-translations"
+```
+
+Esto copiará los archivos de traducción JSON a `lang/vendor/authxolote`, donde podrás modificar las cadenas de texto para diferentes idiomas.
+
 También puedes usar variables de entorno en tu archivo `.env`:
 
 ```env

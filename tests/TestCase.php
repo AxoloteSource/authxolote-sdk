@@ -19,6 +19,8 @@ abstract class TestCase extends Orchestra
         $app['config']->set('authxolote.url', 'https://authxolote.test/api');
         $app['config']->set('authxolote.token', 'fake-token');
         $app['config']->set('authxolote.debug', false);
+
+        $app['config']->set('cache.default', 'redis');
         
         $app['config']->set('auth.guards.authxolote', [
             'driver' => 'authxolote',

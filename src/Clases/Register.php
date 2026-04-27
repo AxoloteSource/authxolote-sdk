@@ -42,7 +42,7 @@ class Register extends AuthxoloteBase
             }
 
             if ($this->debugMode) {
-                logger()->error('Error al registrar usuario', [
+                logger()->error(__('Error registering user'), [
                     'status' => $response->status(),
                     'body' => $response->body(),
                 ]);
@@ -52,7 +52,7 @@ class Register extends AuthxoloteBase
         } catch (\Exception $e) {
 
             if ($this->debugMode) {
-                logger()->error('Excepción al registrar usuario', ['exception' => $e]);
+                logger()->error(__('Exception registering user'), ['exception' => $e]);
             }
 
             return null;

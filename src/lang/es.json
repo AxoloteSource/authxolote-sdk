@@ -1,0 +1,8 @@
+{
+    "You do not have permission to access this resource": "No tienes permiso para acceder a este recurso",
+    "Error registering user": "Error al registrar usuario",
+    "Exception registering user": "Excepción al registrar usuario",
+    "No roles found in the configuration file.": "No se encontraron roles en el archivo de configuración.",
+    "An error occurred while associating the roles.": "Ocurrió un error al asociar los roles.",
+    "Roles associated successfully.": "Roles asociados correctamente."
+}

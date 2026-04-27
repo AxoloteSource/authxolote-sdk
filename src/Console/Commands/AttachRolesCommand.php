@@ -19,7 +19,7 @@ class AttachRolesCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Asocia los roles definidos en el archivo de configuración mediante Authxolote::attachRolesAction';
+    protected $description = 'Associate roles defined in the configuration file using Authxolote::attachRolesAction';
 
     /**
      * Execute the console command.
@@ -29,19 +29,19 @@ class AttachRolesCommand extends Command
         $roles = config('actions', []);
 
         if (empty($roles)) {
-            $this->error('No se encontraron roles en el archivo de configuración.');
+            $this->error('No roles found in the configuration file.');
 
             return 1;
         }
         $result = Authxolote::attachRolesAction($roles);
 
         if (! $result) {
-            $this->error('Ocurrió un error al asociar los roles.');
+            $this->error('An error occurred while associating the roles.');
 
             return 1;
         }
 
-        $this->info('Roles asociados correctamente.');
+        $this->info('Roles associated successfully.');
 
         return 0;
 

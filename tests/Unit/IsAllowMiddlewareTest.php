@@ -75,7 +75,7 @@ class IsAllowMiddlewareTest extends TestCase
             }, 'edit-posts');
         } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
             $this->assertEquals(403, $e->getStatusCode());
-            $this->assertEquals('No tienes permiso para acceder a este recurso', $e->getMessage());
+            $this->assertEquals('You do not have permission to access this resource', $e->getMessage());
             return;
         }
 
@@ -113,7 +113,7 @@ class IsAllowMiddlewareTest extends TestCase
 
         $this->assertEquals(403, $response->getStatusCode());
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('No tienes permiso para acceder a este recurso', $data['message']);
+        $this->assertEquals('You do not have permission to access this resource', $data['message']);
         $this->assertEquals('edit-posts', $data['data']['action']);
     }
 }

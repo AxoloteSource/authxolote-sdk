@@ -18,6 +18,8 @@ class AuthxoloteServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->loadJsonTranslationsFrom(__DIR__.'/lang');
+
         $this->app['router']->aliasMiddleware('isAllow', \Authxolote\Sdk\Middleware\IsAllow::class);
 
         if ($this->app->runningInConsole()) {
@@ -26,6 +28,10 @@ class AuthxoloteServiceProvider extends ServiceProvider
                     __DIR__.'/../config/authxolote.php' => config_path('authxolote.php'),
                 ], 'authxolote-config');
             }
+
+            $this->publishes([
+                __DIR__.'/lang' => $this->app->langPath('vendor/authxolote'),
+            ], 'authxolote-translations');
 
             $this->commands([
                 AttachRolesCommand::class,
