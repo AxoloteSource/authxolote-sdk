@@ -60,8 +60,6 @@ class AuthxoloteGuard implements Guard
         }
 
         if (! $this->sync_user) {
-            logger('Sync user disabled');
-            logger($userData);
             $this->user = new ExternalUser($userData);
 
             return $this->user;

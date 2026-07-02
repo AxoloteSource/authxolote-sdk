@@ -5,7 +5,12 @@ namespace Authxolote\Sdk;
 use Authxolote\Sdk\Clases\AttachRolesAction;
 use Authxolote\Sdk\Clases\CheckPermission;
 use Authxolote\Sdk\Clases\Me;
+use Authxolote\Sdk\Clases\PasswordChange;
+use Authxolote\Sdk\Clases\PasswordRecovery;
+use Authxolote\Sdk\Clases\PasswordReset;
 use Authxolote\Sdk\Clases\Register;
+use Authxolote\Sdk\DTO\PasswordResetDto;
+use Authxolote\Sdk\DTO\PasswordTokenDto;
 use Authxolote\Sdk\DTO\UserDto;
 use Authxolote\Sdk\DTO\ExternalUser;
 use Authxolote\Sdk\Enums\RoleEnum;
@@ -73,6 +78,30 @@ class Authxolote
     public static function me(): Me
     {
         return new Me;
+    }
+
+    /**
+     * Inicia la recuperación de contraseña.
+     */
+    public static function recoveryPassword(string $email): ?PasswordTokenDto
+    {
+        return (new PasswordRecovery())->run($email);
+    }
+
+    /**
+     * Inicia el cambio de contraseña.
+     */
+    public static function changePassword(): ?PasswordTokenDto
+    {
+        return (new PasswordChange())->run();
+    }
+
+    /**
+     * Restablece la contraseña usando el OTP.
+     */
+    public static function resetPassword(string $token, string $otp_code, string $password, string $password_confirmation): ?PasswordResetDto
+    {
+        return (new PasswordReset())->run($token, $otp_code, $password, $password_confirmation);
     }
 
     public static function attachRolesAction(array $roles): bool

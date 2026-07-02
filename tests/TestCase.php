@@ -3,9 +3,9 @@
 namespace Authxolote\Sdk\Tests;
 
 use Authxolote\Sdk\AuthxoloteServiceProvider;
-use Orchestra\Testbench\TestCase as Orchestra;
+use Orchestra\Testbench\TestCase as BaseTestCase;
 
-abstract class TestCase extends Orchestra
+abstract class TestCase extends BaseTestCase
 {
     protected function getPackageProviders($app)
     {
