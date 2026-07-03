@@ -9,6 +9,7 @@ use Authxolote\Sdk\Clases\PasswordChange;
 use Authxolote\Sdk\Clases\PasswordRecovery;
 use Authxolote\Sdk\Clases\PasswordReset;
 use Authxolote\Sdk\Clases\Register;
+use Authxolote\Sdk\Clases\UserList;
 use Authxolote\Sdk\DTO\PasswordResetDto;
 use Authxolote\Sdk\DTO\PasswordTokenDto;
 use Authxolote\Sdk\DTO\UserDto;
@@ -102,6 +103,11 @@ class Authxolote
     public static function resetPassword(string $token, string $otp_code, string $password, string $password_confirmation): ?PasswordResetDto
     {
         return (new PasswordReset())->run($token, $otp_code, $password, $password_confirmation);
+    }
+
+    public static function userList(): UserList
+    {
+        return new UserList;
     }
 
     public static function attachRolesAction(array $roles): bool

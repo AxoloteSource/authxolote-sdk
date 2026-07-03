@@ -37,15 +37,71 @@ class AuthxoloteBase
     /**
      * @return PromiseInterface|Response
      */
-    protected function post(?array $data = null)
+    protected function post(?array $data = null, ?string $url = null)
     {
+        $url ??= $this->url;
+
         if (Authxolote::isFake()) {
-            $this->fake();
+            $this->fake($url);
         }
 
         $this->response = Http::withToken($this->token)
             ->withHeaders($this->headers)
-            ->post("$this->url", $data);
+            ->post($url, $data);
+
+        return $this->response;
+    }
+
+    /**
+     * @return PromiseInterface|Response
+     */
+    protected function get(?array $data = null, ?string $url = null)
+    {
+        $url ??= $this->url;
+
+        if (Authxolote::isFake()) {
+            $this->fake($url);
+        }
+
+        $this->response = Http::withToken($this->token)
+            ->withHeaders($this->headers)
+            ->get($url, $data);
+
+        return $this->response;
+    }
+
+    /**
+     * @return PromiseInterface|Response
+     */
+    protected function put(?array $data = null, ?string $url = null)
+    {
+        $url ??= $this->url;
+
+        if (Authxolote::isFake()) {
+            $this->fake($url);
+        }
+
+        $this->response = Http::withToken($this->token)
+            ->withHeaders($this->headers)
+            ->put($url, $data);
+
+        return $this->response;
+    }
+
+    /**
+     * @return PromiseInterface|Response
+     */
+    protected function deleteRequest(?array $data = null, ?string $url = null)
+    {
+        $url ??= $this->url;
+
+        if (Authxolote::isFake()) {
+            $this->fake($url);
+        }
+
+        $this->response = Http::withToken($this->token)
+            ->withHeaders($this->headers)
+            ->delete($url, $data);
 
         return $this->response;
     }
@@ -86,10 +142,10 @@ class AuthxoloteBase
         return [];
     }
 
-    private function fake(): void
+    private function fake(?string $url = null): void
     {
         Http::fake([
-            $this->url = rtrim(config('authxolote.url'), '/').$this->uri => Http::response(
+            $url ?? $this->url => Http::response(
                 $this->fakeResponse(),
                 200,
                 $this->headers
