@@ -34,7 +34,7 @@ class UserList extends AuthxoloteBase
             'search' => $search,
         ], fn ($value) => ! is_null($value)));
 
-        if ($response->ok()) {
+        if ($response->successful()) {
             return $response->json();
         }
 
@@ -65,7 +65,7 @@ class UserList extends AuthxoloteBase
             'user_ids' => $userIds,
         ], fn ($value) => ! is_null($value)));
 
-        if ($response->ok()) {
+        if ($response->successful()) {
             return UserListDto::fromArray($response->json());
         }
 
@@ -86,7 +86,7 @@ class UserList extends AuthxoloteBase
 
         $response = $this->get(null, $url);
 
-        if ($response->ok()) {
+        if ($response->successful()) {
             return UserListDto::fromArray($response->json());
         }
 
@@ -120,7 +120,7 @@ class UserList extends AuthxoloteBase
             'user_ids' => $userIds,
         ], fn ($value) => ! is_null($value)), $url);
 
-        if ($response->ok()) {
+        if ($response->successful()) {
             return UserListDto::fromArray($response->json());
         }
 
@@ -141,7 +141,7 @@ class UserList extends AuthxoloteBase
 
         $response = $this->deleteRequest(null, $url);
 
-        if ($response->ok()) {
+        if ($response->successful()) {
             return true;
         }
 
@@ -174,7 +174,7 @@ class UserList extends AuthxoloteBase
             'search' => $search,
         ], fn ($value) => ! is_null($value)), $url);
 
-        if ($response->ok()) {
+        if ($response->successful()) {
             return $response->json();
         }
 
