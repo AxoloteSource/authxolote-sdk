@@ -60,4 +60,42 @@ return [
     |
     */
     'sync_user' => env('AUTHXOLOTE_SYNC_USER', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Menu Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This option defines the menu structure to be synced with the Authxolote API.
+    | Use the `php artisan authxolote:menu` command to sync the menu.
+    |
+    | Example:
+    |
+    | 'menu' => [
+    |     'name' => 'Messages',
+    |     'application' => [
+    |         'name' => 'Messages',
+    |         'slug' => 'message',
+    |         'description' => 'Messages',
+    |     ],
+    |     'menu_items' => [
+    |         'home' => [
+    |             'path' => '/',
+    |             'icon' => 'House',
+    |         ],
+    |         'ui' => [
+    |             'icon' => 'Ui',
+    |             'menu_items' => [
+    |                 'email_templates' => [
+    |                     'path' => '/emails',
+    |                     'icon' => 'Mail',
+    |                     'name' => 'email_templates',
+    |                 ],
+    |             ],
+    |         ],
+    |     ],
+    | ],
+    |
+    */
+    'menu' => [],
 ];

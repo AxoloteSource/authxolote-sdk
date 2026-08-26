@@ -3,6 +3,7 @@
 namespace Authxolote\Sdk;
 
 use Authxolote\Sdk\Clases\AttachRolesAction;
+use Authxolote\Sdk\Clases\SetupMenu;
 use Authxolote\Sdk\Clases\CheckPermission;
 use Authxolote\Sdk\Clases\Me;
 use Authxolote\Sdk\Clases\PasswordChange;
@@ -113,6 +114,12 @@ class Authxolote
     public static function attachRolesAction(array $roles): bool
     {
         $action = new AttachRolesAction($roles);
+        return $action->run();
+    }
+
+    public static function setupMenu(array $menu): bool
+    {
+        $action = new SetupMenu($menu);
         return $action->run();
     }
 }
