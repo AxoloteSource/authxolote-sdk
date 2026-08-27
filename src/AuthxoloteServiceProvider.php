@@ -3,6 +3,7 @@
 namespace Authxolote\Sdk;
 
 use Authxolote\Sdk\Console\Commands\AttachRolesCommand;
+use Authxolote\Sdk\Console\Commands\SetupMenuCommand;
 use Authxolote\Sdk\Guards\AuthxoloteGuard;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
@@ -35,6 +36,7 @@ class AuthxoloteServiceProvider extends ServiceProvider
 
             $this->commands([
                 AttachRolesCommand::class,
+                SetupMenuCommand::class,
             ]);
         }
 
