@@ -83,27 +83,27 @@ class Authxolote
     }
 
     /**
-     * Inicia la recuperación de contraseña.
+     * Devuelve una instancia de PasswordRecovery para consultar errores.
      */
-    public static function recoveryPassword(string $email): ?PasswordTokenDto
+    public static function passwordRecovery(): PasswordRecovery
     {
-        return (new PasswordRecovery())->run($email);
+        return new PasswordRecovery;
     }
 
     /**
-     * Inicia el cambio de contraseña.
+     * Devuelve una instancia de PasswordChange para consultar errores.
      */
-    public static function changePassword(): ?PasswordTokenDto
+    public static function passwordChange(): PasswordChange
     {
-        return (new PasswordChange())->run();
+        return new PasswordChange;
     }
 
     /**
-     * Restablece la contraseña usando el OTP.
+     * Devuelve una instancia de PasswordReset para consultar errores.
      */
-    public static function resetPassword(string $token, string $otp_code, string $password, string $password_confirmation): ?PasswordResetDto
+    public static function passwordReset(): PasswordReset
     {
-        return (new PasswordReset())->run($token, $otp_code, $password, $password_confirmation);
+        return new PasswordReset;
     }
 
     public static function userList(): UserList
@@ -111,21 +111,65 @@ class Authxolote
         return new UserList;
     }
 
-    public static function attachRolesAction(array $roles): bool
+    /**
+     * Devuelve una instancia de AttachRolesAction para consultar errores.
+     */
+    public static function attachRoles(array $roles): AttachRolesAction
     {
-        $action = new AttachRolesAction($roles);
-        return $action->run();
+        return new AttachRolesAction($roles);
     }
 
-    public static function setupMenu(array $menu): bool
+    /**
+     * Devuelve una instancia de SetupMenu para consultar errores.
+     */
+    public static function setupMenuAction(array $menu): SetupMenu
     {
-        $action = new SetupMenu($menu);
-        return $action->run();
+        return new SetupMenu($menu);
     }
 
     /*************************/
     /*   DEPRECATE METHODS   */
     /*************************/
+
+    /**
+     * @deprecated Usa passwordRecovery()->run($email) en su lugar.
+     */
+    public static function recoveryPassword(string $email): ?PasswordTokenDto
+    {
+        return self::passwordRecovery()->run($email);
+    }
+
+    /**
+     * @deprecated Usa passwordChange()->run() en su lugar.
+     */
+    public static function changePassword(): ?PasswordTokenDto
+    {
+        return self::passwordChange()->run();
+    }
+
+    /**
+     * @deprecated Usa passwordReset()->run(...) en su lugar.
+     */
+    public static function resetPassword(string $token, string $otp_code, string $password, string $password_confirmation): ?PasswordResetDto
+    {
+        return self::passwordReset()->run($token, $otp_code, $password, $password_confirmation);
+    }
+
+    /**
+     * @deprecated Usa attachRoles($roles)->run() en su lugar.
+     */
+    public static function attachRolesAction(array $roles): bool
+    {
+        return self::attachRoles($roles)->run();
+    }
+
+    /**
+     * @deprecated Usa setupMenuAction($menu)->run() en su lugar.
+     */
+    public static function setupMenu(array $menu): bool
+    {
+        return self::setupMenuAction($menu)->run();
+    }
 
     /**
      * @deprecated Usa signUp()->signUp() en su lugar.

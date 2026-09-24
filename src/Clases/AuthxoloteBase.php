@@ -44,27 +44,7 @@ class AuthxoloteBase
      */
     protected function post(?array $data = null, ?string $url = null)
     {
-        $url ??= $this->url;
-        $this->error = [];
-
-        if (Authxolote::isFake()) {
-            $this->fake($url);
-        }
-
-        try {
-            $this->response = Http::withToken($this->token)
-                ->withHeaders($this->headers)
-                ->post($url, $data);
-        } catch (\Throwable $e) {
-            $this->captureError($e);
-            throw $e;
-        }
-
-        if ($this->response instanceof Response && $this->response->failed()) {
-            $this->captureError($this->response);
-        }
-
-        return $this->response;
+        return $this->send('post', $data, $url);
     }
 
     /**
@@ -72,27 +52,7 @@ class AuthxoloteBase
      */
     protected function get(?array $data = null, ?string $url = null)
     {
-        $url ??= $this->url;
-        $this->error = [];
-
-        if (Authxolote::isFake()) {
-            $this->fake($url);
-        }
-
-        try {
-            $this->response = Http::withToken($this->token)
-                ->withHeaders($this->headers)
-                ->get($url, $data);
-        } catch (\Throwable $e) {
-            $this->captureError($e);
-            throw $e;
-        }
-
-        if ($this->response instanceof Response && $this->response->failed()) {
-            $this->captureError($this->response);
-        }
-
-        return $this->response;
+        return $this->send('get', $data, $url);
     }
 
     /**
@@ -100,33 +60,23 @@ class AuthxoloteBase
      */
     protected function put(?array $data = null, ?string $url = null)
     {
-        $url ??= $this->url;
-        $this->error = [];
-
-        if (Authxolote::isFake()) {
-            $this->fake($url);
-        }
-
-        try {
-            $this->response = Http::withToken($this->token)
-                ->withHeaders($this->headers)
-                ->put($url, $data);
-        } catch (\Throwable $e) {
-            $this->captureError($e);
-            throw $e;
-        }
-
-        if ($this->response instanceof Response && $this->response->failed()) {
-            $this->captureError($this->response);
-        }
-
-        return $this->response;
+        return $this->send('put', $data, $url);
     }
 
     /**
      * @return PromiseInterface|Response
      */
     protected function deleteRequest(?array $data = null, ?string $url = null)
+    {
+        return $this->send('delete', $data, $url);
+    }
+
+    /**
+     * Ejecuta la petición HTTP y registra el error si la respuesta falla.
+     *
+     * @return PromiseInterface|Response
+     */
+    private function send(string $method, ?array $data = null, ?string $url = null)
     {
         $url ??= $this->url;
         $this->error = [];
@@ -138,7 +88,7 @@ class AuthxoloteBase
         try {
             $this->response = Http::withToken($this->token)
                 ->withHeaders($this->headers)
-                ->delete($url, $data);
+                ->{$method}($url, $data);
         } catch (\Throwable $e) {
             $this->captureError($e);
             throw $e;
