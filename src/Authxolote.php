@@ -67,11 +67,11 @@ class Authxolote
     }
 
     /**
-     * Registra un usuario con los detalles proporcionados y devuelve una instancia de UserDto.
+     * Devuelve una instancia de Register para crear usuarios y consultar errores.
      */
-    public static function register(string $email, string $name, string $password, string $roleKey): ?UserDto
+    public static function signUp(): Register
     {
-        return (new Register)->register($email, $name, $password, $roleKey);
+        return new Register;
     }
 
     /**
@@ -121,5 +121,17 @@ class Authxolote
     {
         $action = new SetupMenu($menu);
         return $action->run();
+    }
+
+    /*************************/
+    /*   DEPRECATE METHODS   */
+    /*************************/
+
+    /**
+     * @deprecated Usa signUp()->signUp() en su lugar.
+     */
+    public static function register(string $email, string $name, string $password, string $roleKey): ?UserDto
+    {
+        return (new Register)->signUp($email, $name, $password, $roleKey);
     }
 }

@@ -14,7 +14,8 @@ class RegisterTest extends TestCase
     {
         Authxolote::fake();
 
-        $user = Authxolote::register(
+        $register = Authxolote::signUp();
+        $user = $register->signUp(
             'test@example.com',
             'Test User',
             'password123',
@@ -24,16 +25,38 @@ class RegisterTest extends TestCase
         $this->assertInstanceOf(UserDto::class, $user);
         $this->assertEquals('test@example.com', $user->email);
         $this->assertNotEmpty($user->accessToken);
+        $this->assertFalse($register->hasError());
+        $this->assertEmpty($register->getError());
     }
 
     /** @test */
     public function it_returns_null_if_registration_fails()
     {
         Authxolote::fake(false); // Desactivar fake global para usar Http::fake manual
-        
+
         Http::fake([
             'https://authxolote.test/api/api/v1/register' => Http::response(['message' => 'Error'], 422),
         ]);
+
+        $register = Authxolote::signUp();
+        $user = $register->signUp(
+            'test@example.com',
+            'Test User',
+            'password123',
+            'admin'
+        );
+
+        $this->assertNull($user);
+        $this->assertTrue($register->hasError());
+        $this->assertSame('error', $register->getError()['status']);
+        $this->assertSame('Error', $register->getError()['message']);
+        $this->assertSame(['message' => 'Error'], $register->getError()['data']);
+    }
+
+    /** @test */
+    public function it_keeps_the_deprecated_register_method_working()
+    {
+        Authxolote::fake();
 
         $user = Authxolote::register(
             'test@example.com',
@@ -42,6 +65,6 @@ class RegisterTest extends TestCase
             'admin'
         );
 
-        $this->assertNull($user);
+        $this->assertInstanceOf(UserDto::class, $user);
     }
 }

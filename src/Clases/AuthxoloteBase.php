@@ -21,6 +21,11 @@ class AuthxoloteBase
 
     protected string $uri;
 
+    /**
+     * Último error ocurrido durante la operación.
+     */
+    protected array $error = [];
+
     private $response;
 
     public function __construct(string $uri)
@@ -40,14 +45,24 @@ class AuthxoloteBase
     protected function post(?array $data = null, ?string $url = null)
     {
         $url ??= $this->url;
+        $this->error = [];
 
         if (Authxolote::isFake()) {
             $this->fake($url);
         }
 
-        $this->response = Http::withToken($this->token)
-            ->withHeaders($this->headers)
-            ->post($url, $data);
+        try {
+            $this->response = Http::withToken($this->token)
+                ->withHeaders($this->headers)
+                ->post($url, $data);
+        } catch (\Throwable $e) {
+            $this->captureError($e);
+            throw $e;
+        }
+
+        if ($this->response instanceof Response && $this->response->failed()) {
+            $this->captureError($this->response);
+        }
 
         return $this->response;
     }
@@ -58,14 +73,24 @@ class AuthxoloteBase
     protected function get(?array $data = null, ?string $url = null)
     {
         $url ??= $this->url;
+        $this->error = [];
 
         if (Authxolote::isFake()) {
             $this->fake($url);
         }
 
-        $this->response = Http::withToken($this->token)
-            ->withHeaders($this->headers)
-            ->get($url, $data);
+        try {
+            $this->response = Http::withToken($this->token)
+                ->withHeaders($this->headers)
+                ->get($url, $data);
+        } catch (\Throwable $e) {
+            $this->captureError($e);
+            throw $e;
+        }
+
+        if ($this->response instanceof Response && $this->response->failed()) {
+            $this->captureError($this->response);
+        }
 
         return $this->response;
     }
@@ -76,14 +101,24 @@ class AuthxoloteBase
     protected function put(?array $data = null, ?string $url = null)
     {
         $url ??= $this->url;
+        $this->error = [];
 
         if (Authxolote::isFake()) {
             $this->fake($url);
         }
 
-        $this->response = Http::withToken($this->token)
-            ->withHeaders($this->headers)
-            ->put($url, $data);
+        try {
+            $this->response = Http::withToken($this->token)
+                ->withHeaders($this->headers)
+                ->put($url, $data);
+        } catch (\Throwable $e) {
+            $this->captureError($e);
+            throw $e;
+        }
+
+        if ($this->response instanceof Response && $this->response->failed()) {
+            $this->captureError($this->response);
+        }
 
         return $this->response;
     }
@@ -94,14 +129,24 @@ class AuthxoloteBase
     protected function deleteRequest(?array $data = null, ?string $url = null)
     {
         $url ??= $this->url;
+        $this->error = [];
 
         if (Authxolote::isFake()) {
             $this->fake($url);
         }
 
-        $this->response = Http::withToken($this->token)
-            ->withHeaders($this->headers)
-            ->delete($url, $data);
+        try {
+            $this->response = Http::withToken($this->token)
+                ->withHeaders($this->headers)
+                ->delete($url, $data);
+        } catch (\Throwable $e) {
+            $this->captureError($e);
+            throw $e;
+        }
+
+        if ($this->response instanceof Response && $this->response->failed()) {
+            $this->captureError($this->response);
+        }
 
         return $this->response;
     }
@@ -109,6 +154,46 @@ class AuthxoloteBase
     protected function response(): ?array
     {
         return $this->response->json();
+    }
+
+    /**
+     * Indica si la última operación terminó con un error.
+     */
+    public function hasError(): bool
+    {
+        return ! empty($this->error);
+    }
+
+    /**
+     * Retorna el último error ocurrido, o un arreglo vacío si no hubo error.
+     */
+    public function getError(): array
+    {
+        return $this->error;
+    }
+
+    /**
+     * Registra el error de una respuesta fallida o de una excepción.
+     */
+    protected function captureError(\Throwable|Response $source): void
+    {
+        if ($source instanceof Response) {
+            $payload = rescue(fn () => $source->json(), [], false);
+
+            $this->error = [
+                'status' => 'error',
+                'data' => is_array($payload) ? $payload : [],
+                'message' => is_array($payload) ? ($payload['message'] ?? $source->body()) : $source->body(),
+            ];
+
+            return;
+        }
+
+        $this->error = [
+            'status' => 'error',
+            'data' => [],
+            'message' => $source->getMessage(),
+        ];
     }
 
     /**

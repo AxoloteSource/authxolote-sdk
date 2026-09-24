@@ -18,8 +18,10 @@ class Register extends AuthxoloteBase
     /**
      * Envía una petición para registrar un nuevo usuario.
      */
-    public function register(string $email, string $name, string $password, string $roleKey): ?UserDto
+    public function signUp(string $email, string $name, string $password, string $roleKey): ?UserDto
     {
+        $this->error = [];
+
         try {
             if (Authxolote::isFake()) {
                 $data = $this->fakeResponse();
@@ -41,6 +43,8 @@ class Register extends AuthxoloteBase
                 return UserDto::fromArray($data, $data['data']['access_token'] ?? '');
             }
 
+            $this->captureError($response);
+
             if ($this->debugMode) {
                 logger()->error(__('Error registering user'), [
                     'status' => $response->status(),
@@ -50,6 +54,7 @@ class Register extends AuthxoloteBase
 
             return null;
         } catch (\Exception $e) {
+            $this->captureError($e);
 
             if ($this->debugMode) {
                 logger()->error(__('Exception registering user'), ['exception' => $e]);
@@ -57,6 +62,14 @@ class Register extends AuthxoloteBase
 
             return null;
         }
+    }
+
+    /**
+     * @deprecated Usa signUp() en su lugar.
+     */
+    public function register(string $email, string $name, string $password, string $roleKey): ?UserDto
+    {
+        return $this->signUp($email, $name, $password, $roleKey);
     }
 
     protected function fakeResponse(): array
