@@ -19,7 +19,7 @@ class SetupMenuCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Setup menu defined in the configuration file using Authxolote::setupMenu';
+    protected $description = 'Setup menu defined in the configuration file using Authxolote::setupMenuAction';
 
     /**
      * Execute the console command.
@@ -33,7 +33,7 @@ class SetupMenuCommand extends Command
 
             return 1;
         }
-        $result = Authxolote::setupMenu($menu);
+        $result = Authxolote::setupMenuAction($menu)->run();
 
         if (! $result) {
             $this->error('An error occurred while setting up the menu.');

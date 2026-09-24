@@ -15,15 +15,19 @@ class PasswordTest extends TestCase
     {
         Authxolote::fake();
 
-        $response = Authxolote::recoveryPassword('test@example.com');
+        $recovery = Authxolote::passwordRecovery();
+        $response = $recovery->run('test@example.com');
 
         $this->assertInstanceOf(PasswordTokenDto::class, $response);
         $this->assertNotEmpty($response->token);
         $this->assertNotEmpty($response->expiresAt);
-        
+
         if (config('app.env') !== 'production') {
             $this->assertNotEmpty($response->codeDebug);
         }
+
+        $this->assertFalse($recovery->hasError());
+        $this->assertEmpty($recovery->getError());
     }
 
     /** @test */
@@ -31,7 +35,8 @@ class PasswordTest extends TestCase
     {
         Authxolote::fake();
 
-        $response = Authxolote::changePassword();
+        $change = Authxolote::passwordChange();
+        $response = $change->run();
 
         $this->assertInstanceOf(PasswordTokenDto::class, $response);
         $this->assertNotEmpty($response->token);
@@ -40,6 +45,9 @@ class PasswordTest extends TestCase
         if (config('app.env') !== 'production') {
             $this->assertNotEmpty($response->codeDebug);
         }
+
+        $this->assertFalse($change->hasError());
+        $this->assertEmpty($change->getError());
     }
 
     /** @test */
@@ -47,7 +55,8 @@ class PasswordTest extends TestCase
     {
         Authxolote::fake();
 
-        $response = Authxolote::resetPassword(
+        $reset = Authxolote::passwordReset();
+        $response = $reset->run(
             'valid-token',
             '123456',
             'new-password',
@@ -57,19 +66,27 @@ class PasswordTest extends TestCase
         $this->assertInstanceOf(PasswordResetDto::class, $response);
         $this->assertEquals('OK', $response->status);
         $this->assertEquals('Contraseña restablecida con éxito', $response->message);
+
+        $this->assertFalse($reset->hasError());
+        $this->assertEmpty($reset->getError());
     }
 
     /** @test */
     public function it_returns_null_if_recovery_fails()
     {
         Authxolote::fake(false);
-        
+
         Http::fake([
             '*' => Http::response(['message' => 'Error'], 422),
         ]);
 
-        $response = Authxolote::recoveryPassword('test@example.com');
+        $recovery = Authxolote::passwordRecovery();
+        $response = $recovery->run('test@example.com');
 
         $this->assertNull($response);
+        $this->assertTrue($recovery->hasError());
+        $this->assertSame('error', $recovery->getError()['status']);
+        $this->assertSame('Error', $recovery->getError()['message']);
+        $this->assertSame(['message' => 'Error'], $recovery->getError()['data']);
     }
 }
