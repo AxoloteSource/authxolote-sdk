@@ -54,6 +54,34 @@ class RegisterTest extends TestCase
     }
 
     /** @test */
+    public function it_extracts_the_first_validation_message_when_message_is_null()
+    {
+        Authxolote::fake(false);
+
+        Http::fake([
+            'https://authxolote.test/api/api/v1/register' => Http::response([
+                'status' => 'error',
+                'message' => null,
+                'data' => ['email' => ['The email has already been taken.']],
+            ], 422),
+        ]);
+
+        $register = Authxolote::signUp();
+        $user = $register->signUp(
+            'test@example.com',
+            'Test User',
+            'password123',
+            'admin'
+        );
+
+        $this->assertNull($user);
+        $this->assertTrue($register->hasError());
+        $this->assertSame('error', $register->getError()['status']);
+        $this->assertSame('The email has already been taken.', $register->getError()['message']);
+        $this->assertSame(['email' => ['The email has already been taken.']], $register->getError()['data']);
+    }
+
+    /** @test */
     public function it_keeps_the_deprecated_register_method_working()
     {
         Authxolote::fake();

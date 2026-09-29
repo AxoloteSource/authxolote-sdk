@@ -130,10 +130,23 @@ class AuthxoloteBase
         if ($source instanceof Response) {
             $payload = rescue(fn () => $source->json(), [], false);
 
+            if (! is_array($payload)) {
+                $this->error = [
+                    'status' => 'error',
+                    'data' => [],
+                    'message' => $source->body(),
+                ];
+
+                return;
+            }
+
+            $data = $payload['data'] ?? $payload['errors'] ?? $payload;
+            $message = ($payload['message'] ?? null) ?: $this->extractErrorMessage($data) ?: $source->body();
+
             $this->error = [
                 'status' => 'error',
-                'data' => is_array($payload) ? $payload : [],
-                'message' => is_array($payload) ? ($payload['message'] ?? $source->body()) : $source->body(),
+                'data' => $data,
+                'message' => $message,
             ];
 
             return;
@@ -144,6 +157,32 @@ class AuthxoloteBase
             'data' => [],
             'message' => $source->getMessage(),
         ];
+    }
+
+    /**
+     * Extrae el primer mensaje de error legible de un arreglo de errores.
+     *
+     * @param  array<int|string, mixed>  $data
+     */
+    protected function extractErrorMessage(array $data): ?string
+    {
+        foreach ($data as $value) {
+            if (is_array($value)) {
+                $message = $this->extractErrorMessage($value);
+
+                if ($message !== null) {
+                    return $message;
+                }
+
+                continue;
+            }
+
+            if (is_string($value) && $value !== '') {
+                return $value;
+            }
+        }
+
+        return null;
     }
 
     /**
