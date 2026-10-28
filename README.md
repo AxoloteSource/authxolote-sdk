@@ -106,6 +106,26 @@ $user = Authxolote::register(
 );
 ```
 
+### Validating Credentials
+
+Validate a user's credentials without generating an access token. This endpoint requires authentication and the `auth.validate-credentials` action.
+
+Make sure `AUTHXOLOTE_TOKEN` is configured and belongs to a user with that action.
+
+```php
+use Authxolote\Sdk\Authxolote;
+
+$isValid = Authxolote::validateCredentials()->run('user@example.com', 'password123');
+
+if ($isValid === null) {
+    // The authentication service could not be reached.
+} elseif ($isValid) {
+    // The credentials are valid.
+} else {
+    // The credentials are invalid.
+}
+```
+
 ### Console Commands
 
 To synchronize roles and actions, you must first create a `config/actions.php` file and register the roles with their respective actions:

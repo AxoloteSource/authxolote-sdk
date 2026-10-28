@@ -11,6 +11,7 @@ use Authxolote\Sdk\Clases\PasswordRecovery;
 use Authxolote\Sdk\Clases\PasswordReset;
 use Authxolote\Sdk\Clases\Register;
 use Authxolote\Sdk\Clases\UserList;
+use Authxolote\Sdk\Clases\ValidateCredentials;
 use Authxolote\Sdk\DTO\PasswordResetDto;
 use Authxolote\Sdk\DTO\PasswordTokenDto;
 use Authxolote\Sdk\DTO\UserDto;
@@ -104,6 +105,14 @@ class Authxolote
     public static function passwordReset(): PasswordReset
     {
         return new PasswordReset;
+    }
+
+    /**
+     * Devuelve una instancia de ValidateCredentials para validar credenciales sin generar un token.
+     */
+    public static function validateCredentials(): ValidateCredentials
+    {
+        return new ValidateCredentials;
     }
 
     public static function userList(): UserList
