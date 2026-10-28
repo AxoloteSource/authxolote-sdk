@@ -26,7 +26,13 @@ class ValidateCredentials extends AuthxoloteBase
     public function run(string $email, string $password): ?bool
     {
         if (Authxolote::isFake()) {
-            return (bool) data_get($this->fakeResponse(), 'data.valid', true);
+            $response = Authxolote::getFakeResponse(self::class, $this->fakeResponse());
+
+            if (data_get($response, 'status') === 'error') {
+                return null;
+            }
+
+            return (bool) data_get($response, 'data.valid', true);
         }
 
         try {

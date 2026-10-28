@@ -24,6 +24,52 @@ class ValidateCredentialsTest extends TestCase
     }
 
     /** @test */
+    public function it_returns_false_for_invalid_credentials_in_fake_mode()
+    {
+        Authxolote::fake();
+
+        Authxolote::fakeResponse(ValidateCredentials::class, [
+            'status' => 'OK',
+            'message' => null,
+            'data' => [
+                'valid' => false,
+            ],
+        ]);
+
+        $this->assertFalse(Authxolote::validateCredentials()->run('user@example.com', 'wrong-password'));
+    }
+
+    /** @test */
+    public function it_returns_null_for_an_error_response_in_fake_mode()
+    {
+        Authxolote::fake();
+
+        Authxolote::fakeResponse(ValidateCredentials::class, [
+            'status' => 'error',
+            'message' => 'Service unavailable',
+            'data' => [],
+        ]);
+
+        $this->assertNull(Authxolote::validateCredentials()->run('user@example.com', 'password'));
+    }
+
+    /** @test */
+    public function it_resets_custom_fake_responses_when_fake_is_called_again()
+    {
+        Authxolote::fake();
+
+        Authxolote::fakeResponse(ValidateCredentials::class, [
+            'data' => [
+                'valid' => false,
+            ],
+        ]);
+
+        Authxolote::fake();
+
+        $this->assertTrue(Authxolote::validateCredentials()->run('user@example.com', 'password'));
+    }
+
+    /** @test */
     public function it_returns_false_for_invalid_credentials()
     {
         Authxolote::fake(false);

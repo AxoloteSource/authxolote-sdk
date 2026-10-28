@@ -35,6 +35,13 @@ class Authxolote
 
     private static bool $isFake = false;
 
+    /**
+     * Respuestas fake personalizadas por clase del SDK.
+     *
+     * @var array<class-string, array<string, mixed>>
+     */
+    private static array $fakeResponses = [];
+
     public static function isFake(): bool
     {
         return self::$isFake;
@@ -42,7 +49,31 @@ class Authxolote
 
     public static function fake(bool $isFake = true): void
     {
-        Authxolote::$isFake = $isFake;
+        self::$isFake = $isFake;
+        self::$fakeResponses = [];
+    }
+
+    /**
+     * Define una respuesta fake para una clase específica del SDK.
+     *
+     * @param  class-string  $class
+     * @param  array<string, mixed>  $response
+     */
+    public static function fakeResponse(string $class, array $response): void
+    {
+        self::$fakeResponses[$class] = $response;
+    }
+
+    /**
+     * Obtiene la respuesta fake configurada para una clase del SDK.
+     *
+     * @param  class-string  $class
+     * @param  array<string, mixed>  $default
+     * @return array<string, mixed>
+     */
+    public static function getFakeResponse(string $class, array $default = []): array
+    {
+        return self::$fakeResponses[$class] ?? $default;
     }
 
     public static function actingAs($user): void

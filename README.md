@@ -163,6 +163,20 @@ Authxolote::action('edit-posts')->isAllow();
 Authxolote::action('other-action')->isAllow();
 ```
 
+You can also customize the fake response of a specific SDK class:
+
+```php
+use Authxolote\Sdk\Clases\ValidateCredentials;
+
+Authxolote::fake();
+Authxolote::fakeResponse(ValidateCredentials::class, [
+    'status' => 'OK',
+    'data' => ['valid' => false],
+]);
+
+Authxolote::validateCredentials()->run('user@example.com', 'wrong-password'); // false
+```
+
 ### Middleware
 
 The SDK includes a middleware to protect your routes based on permissions. It is automatically registered as `isAllow`.
