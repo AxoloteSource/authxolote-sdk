@@ -3,19 +3,21 @@
 namespace Authxolote\Sdk;
 
 use Authxolote\Sdk\Clases\AttachRolesAction;
-use Authxolote\Sdk\Clases\SetupMenu;
 use Authxolote\Sdk\Clases\CheckPermission;
+use Authxolote\Sdk\Clases\CreateOtp;
 use Authxolote\Sdk\Clases\Me;
 use Authxolote\Sdk\Clases\PasswordChange;
 use Authxolote\Sdk\Clases\PasswordRecovery;
 use Authxolote\Sdk\Clases\PasswordReset;
 use Authxolote\Sdk\Clases\Register;
+use Authxolote\Sdk\Clases\SetupMenu;
 use Authxolote\Sdk\Clases\UserList;
 use Authxolote\Sdk\Clases\ValidateCredentials;
+use Authxolote\Sdk\Clases\VerifyOtp;
+use Authxolote\Sdk\DTO\ExternalUser;
 use Authxolote\Sdk\DTO\PasswordResetDto;
 use Authxolote\Sdk\DTO\PasswordTokenDto;
 use Authxolote\Sdk\DTO\UserDto;
-use Authxolote\Sdk\DTO\ExternalUser;
 use Authxolote\Sdk\Enums\RoleEnum;
 
 class Authxolote
@@ -107,6 +109,22 @@ class Authxolote
     }
 
     /**
+     * Devuelve una instancia de CreateOtp para crear retos OTP.
+     */
+    public static function createOtp(): CreateOtp
+    {
+        return new CreateOtp;
+    }
+
+    /**
+     * Devuelve una instancia de VerifyOtp para validar retos OTP.
+     */
+    public static function verifyOtp(): VerifyOtp
+    {
+        return new VerifyOtp;
+    }
+
+    /**
      * Retorna una instancia de Me, clase que retorna datos del usuario autenticado
      */
     public static function me(): Me
@@ -168,7 +186,7 @@ class Authxolote
     }
 
     /*************************/
-    /*   DEPRECATE METHODS   */
+    /*   DEPRECATE METHODS */
     /*************************/
 
     /**

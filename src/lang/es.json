@@ -4,5 +4,7 @@
     "Exception registering user": "Excepción al registrar usuario",
     "No roles found in the configuration file.": "No se encontraron roles en el archivo de configuración.",
     "An error occurred while associating the roles.": "Ocurrió un error al asociar los roles.",
-    "Roles associated successfully.": "Roles asociados correctamente."
+    "Roles associated successfully.": "Roles asociados correctamente.",
+    "Error creating OTP": "Error al crear el OTP",
+    "Error verifying OTP": "Error al verificar el OTP"
 }
