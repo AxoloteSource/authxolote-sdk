@@ -12,7 +12,8 @@ class SetupMenuCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'authxolote:menu';
+    protected $signature = 'authxolote:menu
+                            {--force : Elimina el menú existente y lo vuelve a crear desde la configuración}';
 
     /**
      * The console command description.
@@ -33,7 +34,16 @@ class SetupMenuCommand extends Command
 
             return 1;
         }
-        $result = Authxolote::setupMenuAction($menu)->run();
+
+        $force = (bool) $this->option('force');
+
+        if ($force && ! $this->confirmForce($menu)) {
+            $this->info('Operación cancelada. El menú no fue modificado.');
+
+            return 1;
+        }
+
+        $result = Authxolote::setupMenuAction($menu, $force)->run();
 
         if (! $result) {
             $this->error('An error occurred while setting up the menu.');
@@ -45,5 +55,20 @@ class SetupMenuCommand extends Command
 
         return 0;
 
+    }
+
+    /**
+     * Advierte que el menú se eliminará y se volverá a crear antes de continuar.
+     */
+    private function confirmForce(array $menu): bool
+    {
+        $name = $menu['name'] ?? 'actual';
+
+        $this->newLine();
+        $this->warn("Esto eliminará el menú \"{$name}\" y todos sus ítems, y lo volverá a crear desde la configuración.");
+        $this->warn('Se perderán los roles asignados, el orden y cualquier modificación manual hecha desde el panel.');
+        $this->newLine();
+
+        return $this->confirm('¿Deseas continuar?', false);
     }
 }

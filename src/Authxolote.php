@@ -10,6 +10,7 @@ use Authxolote\Sdk\Clases\PasswordChange;
 use Authxolote\Sdk\Clases\PasswordRecovery;
 use Authxolote\Sdk\Clases\PasswordReset;
 use Authxolote\Sdk\Clases\Register;
+use Authxolote\Sdk\Clases\ReorderMenu;
 use Authxolote\Sdk\Clases\SetupMenu;
 use Authxolote\Sdk\Clases\UserList;
 use Authxolote\Sdk\Clases\ValidateCredentials;
@@ -179,10 +180,23 @@ class Authxolote
 
     /**
      * Devuelve una instancia de SetupMenu para consultar errores.
+     *
+     * Cuando `$force` es true, el menú existente se elimina y se vuelve a crear
+     * desde cero, perdiendo los roles y cualquier cambio manual.
      */
-    public static function setupMenuAction(array $menu): SetupMenu
+    public static function setupMenuAction(array $menu, bool $force = false): SetupMenu
     {
-        return new SetupMenu($menu);
+        return new SetupMenu($menu, $force);
+    }
+
+    /**
+     * Devuelve una instancia de ReorderMenu para persistir el orden de un menú.
+     *
+     * @param  array<int, array{id: string, parent_id: string|null, sort_order: int}>  $items
+     */
+    public static function reorderMenu(string $menuId, array $items): ReorderMenu
+    {
+        return new ReorderMenu($menuId, $items);
     }
 
     /*************************/
