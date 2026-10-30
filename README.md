@@ -126,6 +126,26 @@ if ($isValid === null) {
 }
 ```
 
+### Reordering Menus
+
+Persist a new order for every item of a menu by sending its flat list of items. Each item defines its new parent (`null` for root items) and its position among its siblings:
+
+```php
+use Authxolote\Sdk\Authxolote;
+
+$service = Authxolote::reorderMenu($menuId, [
+    ['id' => $homeId, 'parent_id' => null, 'sort_order' => 0],
+    ['id' => $usersId, 'parent_id' => $settingsId, 'sort_order' => 0],
+    ['id' => $settingsId, 'parent_id' => null, 'sort_order' => 1],
+]);
+
+if (! $service->run()) {
+    // Inspect the error with $service->getError().
+}
+```
+
+The payload must include **every** item of the menu, otherwise the API rejects the request.
+
 ### Console Commands
 
 To synchronize roles and actions, you must first create a `config/actions.php` file and register the roles with their respective actions:
@@ -145,6 +165,22 @@ Then, synchronize the roles and actions defined in your configuration:
 ```bash
 php artisan authxolote:actions
 ```
+
+To synchronize the menu defined in `config/authxolote.php`, run:
+
+```bash
+php artisan authxolote:menu
+```
+
+This command creates the application, the menu and its items if they do not exist. It does not delete existing items nor overwrite their names, paths or role assignments.
+
+If you need to discard every manual change and rebuild the menu from the configuration file, use `--force`:
+
+```bash
+php artisan authxolote:menu --force
+```
+
+Before deleting anything, the command asks for confirmation because the existing menu and all of its items will be removed and recreated. **The roles assigned from the panel, the item order, the icons and any other manual modification will be lost.** When the confirmation is declined (or when running with `--no-interaction`), no request is sent and the menu is left untouched.
 
 ## Testing
 

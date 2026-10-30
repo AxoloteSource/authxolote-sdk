@@ -67,7 +67,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | This option defines the menu structure to be synced with the Authxolote API.
-    | Use the `php artisan authxolote:menu` command to sync the menu.
+    | Use the `php artisan authxolote:menu` command to sync the menu. Add
+    | `--force` to delete it and recreate it from this file (loses roles
+    | and manual changes).
     |
     | Example:
     |
