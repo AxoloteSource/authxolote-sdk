@@ -6,12 +6,21 @@ use Authxolote\Sdk\Authxolote;
 use Authxolote\Sdk\DTO\ExternalUser;
 use Authxolote\Sdk\Middleware\IsAllow;
 use Authxolote\Sdk\Tests\TestCase;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
 class IsAllowMiddlewareTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        Authxolote::fake(false);
+
+        parent::tearDown();
+    }
+
     /** @test */
     public function it_allows_access_if_user_has_permission()
     {
@@ -115,5 +124,41 @@ class IsAllowMiddlewareTest extends TestCase
         $data = json_decode($response->getContent(), true);
         $this->assertEquals('You do not have permission to access this resource', $data['message']);
         $this->assertEquals('edit-posts', $data['data']['action']);
+    }
+
+    /** @test */
+    public function it_propagates_authentication_failures_instead_of_returning_forbidden()
+    {
+        Authxolote::fake(false);
+        Http::fake(['*' => Http::response(['message' => 'Unauthenticated.'], 401)]);
+
+        $user = new ExternalUser([
+            'data' => [
+                'user' => [
+                    'id' => '123',
+                    'name' => 'Test User',
+                    'email' => 'test@example.com',
+                    'role_id' => 'admin-role',
+                    'updated_at' => now()->toIso8601String(),
+                    'created_at' => now()->toIso8601String(),
+                    'remember_token' => null,
+                ]
+            ]
+        ]);
+
+        $request = Request::create('/test', 'GET');
+        $request->headers->set('Accept', 'application/json');
+        $request->headers->set('Authorization', 'Bearer expired-token');
+        $request->setUserResolver(fn () => $user);
+
+        $this->assertNotNull($request->user());
+        $this->assertTrue(method_exists($request->user(), 'belongsToAction'));
+
+        $this->expectException(AuthenticationException::class);
+
+        $middleware = new IsAllow();
+        $middleware->handle($request, function ($req) {
+            return response('OK');
+        }, 'edit-posts');
     }
 }

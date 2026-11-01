@@ -4,10 +4,18 @@ namespace Authxolote\Sdk\Tests\Unit;
 
 use Authxolote\Sdk\Authxolote;
 use Authxolote\Sdk\Tests\TestCase;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Http;
 
 class CheckPermissionTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        Authxolote::fake(false);
+
+        parent::tearDown();
+    }
+
     /** @test */
     public function it_can_check_if_a_permission_is_allowed()
     {
@@ -46,5 +54,27 @@ class CheckPermissionTest extends TestCase
         $result = Authxolote::actions(['create-post', 'edit-post'])->isAllowAll();
 
         $this->assertFalse($result);
+    }
+
+    /** @test */
+    public function it_throws_an_authentication_exception_when_the_permissions_api_returns_401()
+    {
+        Authxolote::fake(false);
+        Http::fake(['*' => Http::response(['message' => 'Unauthenticated.'], 401)]);
+
+        $this->expectException(AuthenticationException::class);
+
+        Authxolote::action('create-post')->isAllow();
+    }
+
+    /** @test */
+    public function it_throws_an_authentication_exception_from_is_allow_all_when_the_permissions_api_returns_401()
+    {
+        Authxolote::fake(false);
+        Http::fake(['*' => Http::response(['message' => 'Unauthenticated.'], 401)]);
+
+        $this->expectException(AuthenticationException::class);
+
+        Authxolote::actions(['create-post', 'edit-post'])->isAllowAll();
     }
 }
