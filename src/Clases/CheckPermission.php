@@ -3,7 +3,9 @@
 namespace Authxolote\Sdk\Clases;
 
 use Authxolote\Sdk\Authxolote;
+use Authxolote\Sdk\Enums\Http;
 use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Client\Response;
 
 class CheckPermission extends AuthxoloteBase
@@ -37,6 +39,7 @@ class CheckPermission extends AuthxoloteBase
         ]);
 
         $this->loggerResponse($response);
+        $this->throwIfUnauthenticated($response);
 
         if ($response->successful()) {
             $body = $response->json();
@@ -66,6 +69,7 @@ class CheckPermission extends AuthxoloteBase
         ]);
 
         $this->loggerResponse($response);
+        $this->throwIfUnauthenticated($response);
 
         if ($response->successful()) {
             $body = $response->json();
@@ -93,6 +97,20 @@ class CheckPermission extends AuthxoloteBase
                 ->mapWithKeys(fn ($action) => [$action => in_array($action, self::$actionsFake)])
                 ->toArray(),
         ];
+    }
+
+    /**
+     * Un 401 del servicio de permisos significa que el token ya no es válido,
+     * no que el usuario carezca del permiso. Se propaga para que el consumidor
+     * responda 401 y el cliente pueda renovar la sesión.
+     */
+    private function throwIfUnauthenticated(Response $response): void
+    {
+        if ($response->status() === Http::Unauthorized->value) {
+            $this->loggerError($response);
+
+            throw new AuthenticationException('Unauthenticated.');
+        }
     }
 
     /**

@@ -8,10 +8,13 @@ use Authxolote\Sdk\DTO\ExternalUser;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class AuthxoloteGuard implements Guard
 {
+    protected const CACHE_TTL_MINUTES = 10;
+
     protected ?Authenticatable $user = null;
 
     protected $request;
@@ -45,11 +48,17 @@ class AuthxoloteGuard implements Guard
     public function user(): ?Authenticatable
     {
         if (! is_null($this->user)) {
-            return $this->user;
+            $token = $this->request->bearerToken();
+
+            if (! $token || ! $this->isTokenExpired($token)) {
+                return $this->user;
+            }
+
+            $this->user = null;
         }
 
         $token = $this->request->bearerToken();
-        if (! $token) {
+        if (! $token || $this->isTokenExpired($token)) {
             return null;
         }
 
@@ -119,13 +128,24 @@ class AuthxoloteGuard implements Guard
      */
     protected function getUserData(string $token): ?array
     {
+        if ($this->isTokenExpired($token)) {
+            return null;
+        }
+
         if (Authxolote::isFake()) {
-             return Authxolote::me()->setAuthUserToken($token)->run();
+            return Authxolote::me()->setAuthUserToken($token)->run();
         }
 
         $cacheKey = 'authxolote'.$token;
+        $maxTtl = now()->addMinutes(self::CACHE_TTL_MINUTES);
+        $expiration = $this->getTokenExpiration($token);
+        $ttl = $expiration !== null
+            ? $maxTtl->min(Carbon::createFromTimestamp($expiration))
+            : $maxTtl;
 
-        $ttl = now()->addMinutes(10);
+        if ($ttl->isPast()) {
+            return null;
+        }
 
         if (! $this->cache) {
             return Authxolote::me()->setAuthUserToken($token)->run();
@@ -136,6 +156,49 @@ class AuthxoloteGuard implements Guard
             $ttl,
             fn () => Authxolote::me()->setAuthUserToken($token)->run()
         );
+    }
+
+    /**
+     * Returns the expiration timestamp of a JWT, when the token exposes one.
+     */
+    protected function getTokenExpiration(string $token): ?int
+    {
+        $parts = explode('.', $token);
+
+        if (count($parts) !== 3) {
+            return null;
+        }
+
+        $encodedPayload = strtr($parts[1], '-_', '+/');
+        $padding = strlen($encodedPayload) % 4;
+
+        if ($padding !== 0) {
+            $encodedPayload .= str_repeat('=', 4 - $padding);
+        }
+
+        $decodedPayload = base64_decode($encodedPayload, true);
+
+        if ($decodedPayload === false) {
+            return null;
+        }
+
+        $claims = json_decode($decodedPayload, true);
+
+        if (! is_array($claims) || ! isset($claims['exp']) || ! is_numeric($claims['exp'])) {
+            return null;
+        }
+
+        return (int) $claims['exp'];
+    }
+
+    /**
+     * Determines whether the JWT is past its expiration time.
+     */
+    protected function isTokenExpired(string $token): bool
+    {
+        $expiration = $this->getTokenExpiration($token);
+
+        return $expiration !== null && $expiration <= now()->getTimestamp();
     }
 
     public function hasUser(): bool

@@ -133,6 +133,7 @@ class AuthxoloteBase
             if (! is_array($payload)) {
                 $this->error = [
                     'status' => 'error',
+                    'status_code' => $source->status(),
                     'data' => [],
                     'message' => $source->body(),
                 ];
@@ -145,6 +146,7 @@ class AuthxoloteBase
 
             $this->error = [
                 'status' => 'error',
+                'status_code' => $source->status(),
                 'data' => $data,
                 'message' => $message,
             ];
@@ -154,6 +156,7 @@ class AuthxoloteBase
 
         $this->error = [
             'status' => 'error',
+            'status_code' => null,
             'data' => [],
             'message' => $source->getMessage(),
         ];
